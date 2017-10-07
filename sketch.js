@@ -59,7 +59,7 @@ function setup() {
 
 function draw() {
   
-  if (isStart && !timeup){
+  if (isStart){
   
       timer = int(millis()/1000);
       
@@ -76,7 +76,6 @@ function draw() {
       }
     
   }
-  
   
 }
 
@@ -173,8 +172,20 @@ function Ring (x,y,n,r){
   
 }
 
+/*
+  The Betting Game
+  
+  Attributes
+  
+  
+  
+  Functions
+  
+*/
+
 function BettingGame(){
   this.ring = ring;
+  
   
   
   

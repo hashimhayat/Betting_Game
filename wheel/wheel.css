@@ -2,21 +2,19 @@
 #colorwheel {
   display : none;
   position: fixed;
-  /*top: 50%;*/
-  /*left: 55%;*/
 }
 
 span {
   cursor: pointer;
   position: fixed;
   width: 80px;
-  height: 20px;
+  height: 30px;
   -ms-transform-origin: -240px 50%;
   -webkit-transform-origin: -240px 50%;
   -moz-transform-origin: -240px 50%;
   -o-transform-origin: -240px 50%;
   transform-origin: -240px 50%;
-  opacity: 0.1;
+  opacity: 0.3;
 }
 
 span:hover, span:active {
