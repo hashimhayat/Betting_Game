@@ -180,6 +180,12 @@ function Ring (x,y,n,r){
 
     this.display = false;
   }
+
+  this.calibrate = function(){
+      for (var b = 0; b < this.n_blobs; b++){
+        this.blobs[b]
+      }
+  }
   
 }
 
@@ -260,6 +266,13 @@ function BettingGame(trials, num_blobs){
   
 }
 
+function Gaussian(){
+
+  this.getGaussian = function(){
+
+  }
+}
+
 function calibrateColorWheel(){
   colorwheel.position(screenW/2 + 240,screenH/2 + 50);
 }
@@ -274,6 +287,11 @@ function keyPressed() {
 function showInstruction(_text){
   instructions.show();
   instructions.html(_text, false);
+}
+
+function placeBet(acolor){
+  var colors = acolor.replace("rgb(", "").replace(")","").split(',');
+  this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
 }
 
 function getColor(acolor){

@@ -25,7 +25,7 @@ function processData(data) {
   		pointer.style.OTransform = "rotate(" + c + "deg)"
   		pointer.style.transform = "rotate(" + c + "deg)"
   		pointer.onclick = function(){
-  		  getColor(this.style.backgroundColor);
+  		  placeBet(this.style.backgroundColor);
   		}
       pointer.onmouseover = function(){
         getColor(this.style.backgroundColor);
