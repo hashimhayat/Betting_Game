@@ -25,6 +25,7 @@
 
 var screenW = window.innerWidth;    // Screen Width
 var screenH = window.innerHeight;   // Screen Height
+var thecanvas;
 
 // Timer Settings
 
@@ -39,44 +40,32 @@ var colorwheel;
 var instructions;
 
 // The Ring
-var Ring;
+var RING_RADIUS = 180;
 
-var isStart = false;
+// Betting Game Settings
+var bettingGame;
 
 function setup() {
   
-  var thecanvas = createCanvas(screenW,screenH);
+  thecanvas = createCanvas(screenW,screenH);
   
-  background(81,174,213);
-  
-  Ring = new Ring (screenW/2,screenH/2,10,180);
-  Ring.create();
-  
+  refreshBackground();
+    
   colorwheel = select("#colorwheel");
   calibrateColorWheel();
   instructions = select('#instructions');
+
+  bettingGame = new BettingGame(50, 5);
+  bettingGame.init();
+  
+
 }
 
 function draw() {
   
-  if (isStart){
-  
-      timer = int(millis()/1000);
-      
-      if (timer == duration){
-        timeup = true;
-      }
-      
-      if (timeup){
-        //Ring.hide();
-        colorwheel.style('display', 'inline-block');
-        showInstruction("Please place the first bet at the color you remember for this location.");
-      } else {
-        Ring.show();
-      }
-    
+  if (bettingGame.currentTrial < bettingGame.trials){
+    bettingGame.startTrial();
   }
-  
 }
 
 /*
@@ -114,6 +103,16 @@ function Blob(x,y,r,c){
     this.display = false;
   }
 
+  this.unhide = function(){
+    this.display = true;
+  }
+
+  this.resetColor = function(){
+      noStroke();
+      fill('white');
+      ellipse(this.x,this.y,this.r, this.r);
+  }
+
 }
 
 /*
@@ -138,6 +137,7 @@ function Ring (x,y,n,r){
   this.n_blobs = n;
   this.radius = r;
   this.blobs = [];
+  this.display = false;
   
   this.create = function(){
       
@@ -152,22 +152,33 @@ function Ring (x,y,n,r){
           var rg = int(random(0,255));
           var rb = int(random(0,255));
           
-          var blob = new Blob(x + this.x,y + this.y, this.radius/3 ,{r:rr,g:rg,b:rb});
+          var blob = new Blob(x + this.x, y + this.y, this.radius/2 ,{r:rr,g:rg,b:rb});
           this.blobs.push(blob);
           
       }
+
+      this.display = true;
   }
   
   this.show = function(){
-    for (var b = 0; b < this.n_blobs; b++){
-      this.blobs[b].show();
+
+    if (this.display){
+      for (var b = 0; b < this.n_blobs; b++){
+        this.blobs[b].show();
+      }  
     }
   }
   
   this.hide = function(){
-    for (var b = 0; b < this.n_blobs; b++){
-      this.blobs[b].hide();
+
+    if (this.display){
+      for (var b = 0; b < this.n_blobs; b++){
+        this.blobs[b].hide();
+      }
+      refreshBackground();
     }
+
+    this.display = false;
   }
   
 }
@@ -183,11 +194,69 @@ function Ring (x,y,n,r){
   
 */
 
-function BettingGame(){
-  this.ring = ring;
+function BettingGame(trials, num_blobs){
   
+  this.trials = trials;
+  this.num_blobs = num_blobs;
+  this.ring = null;
   
+  // Settings
+  this.isStart = false;
+  this.timer = 0;
+  this.timeup = false;
   
+  // Current Session
+  this.trialRunning = false;
+  this.currentTrial = 0;
+  this.currentBets = [];
+  this.currentBlob = null;
+  
+  this.init = function(){
+    this.ring = new Ring (screenW/2,screenH/2, this.num_blobs, RING_RADIUS);
+    this.ring.create();
+  }
+  
+  this.startTrial = function(){
+    
+    this.timer = int(millis()/1000);
+    
+    if (this.isStart){
+      
+      if (this.timer == duration){
+        this.timeup = true;
+      }
+      
+      if (this.timeup){
+        
+        this.ring.hide();
+        colorwheel.style('display', 'inline-block');
+        showInstruction("Please place the first bet at the color you remember for this location.");
+        this.getRandomBlob();
+        
+      } else {
+        this.ring.show();
+      }
+    
+    }
+  }
+  
+  this.getRandomBlob = function(){
+    if (this.currentBlob == null){
+      this.currentBlob = this.ring.blobs[int(random(0, this.ring.blobs.length))];
+      this.currentBlob.unhide();
+      this.currentBlob.resetColor();
+    }
+    this.currentBlob.show();
+  }
+  
+  this.getBets = function(){
+    
+    if (this.currentBets.length < 6){
+      
+    } else {
+      this.currentTrial += 1;
+    }
+  }
   
 }
 
@@ -197,7 +266,7 @@ function calibrateColorWheel(){
 
 function keyPressed() {
   if (keyCode === ENTER) {
-    isStart = true;
+    bettingGame.isStart = true;
     instructions.hide();
   }
 }
@@ -207,9 +276,22 @@ function showInstruction(_text){
   instructions.html(_text, false);
 }
 
+function getColor(acolor){
 
+  var colors = acolor.replace("rgb(", "").replace(")","").split(',');
+  this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
+}
 
+function refreshBackground(){
+  background(81,174,213);
+}
 
+function windowResized() {
+  screenW = window.innerWidth;  
+  screenH = window.innerHeight;  
+  thecanvas.size(screenW, screenH);
+  refreshBackground();
+}
 
 
 

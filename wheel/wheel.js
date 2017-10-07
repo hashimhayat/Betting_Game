@@ -25,10 +25,12 @@ function processData(data) {
   		pointer.style.OTransform = "rotate(" + c + "deg)"
   		pointer.style.transform = "rotate(" + c + "deg)"
   		pointer.onclick = function(){
-  		  console.log(this.style.backgroundColor);
+  		  getColor(this.style.backgroundColor);
   		}
-  		  document.getElementById('colorwheel').appendChild(pointer);
+      pointer.onmouseover = function(){
+        getColor(this.style.backgroundColor);
+      }
+  		document.getElementById('colorwheel').appendChild(pointer);
     }
-    
 }
 
