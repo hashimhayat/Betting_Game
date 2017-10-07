@@ -1,0 +1,36 @@
+
+#colorwheel {
+  display : none;
+  position: fixed;
+  /*top: 50%;*/
+  /*left: 55%;*/
+}
+
+span {
+  cursor: pointer;
+  position: fixed;
+  width: 80px;
+  height: 20px;
+  -ms-transform-origin: -240px 50%;
+  -webkit-transform-origin: -240px 50%;
+  -moz-transform-origin: -240px 50%;
+  -o-transform-origin: -240px 50%;
+  transform-origin: -240px 50%;
+  opacity: 0.1;
+}
+
+span:hover, span:active {
+  opacity: 1;
+  border-top-right-radius: 100%;
+  border-bottom-right-radius: 100%;
+}
+
+#instructions {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 20px;
+  z-index: -1;
+}
+

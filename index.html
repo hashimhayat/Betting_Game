@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Betting Game</title>
+    
+    <link rel="stylesheet" href="wheel.css">
+    <script src="libraries/p5.js" type="text/javascript"></script>
+    <script src="libraries/p5.dom.js" type="text/javascript"></script>
+    <script src="libraries/p5.sound.js" type="text/javascript"></script>
+
+    <script src="sketch.js" type="text/javascript"></script>
+    
+    <style> body {padding: 0; margin: 0;} canvas {vertical-align: top;} </style>
+  </head>
+  <body>
+    
+      <div id="colorwheel" name="colorwheel"></div>
+      
+      <div id="instructions" name="instructions">
+        Please remember the 6 colors presented and where each of them is located. Then after the delay, match the correct color with the location given. Press [ENTER] to continue.
+      </div>
+      
+  </body>
+</html>
+
+<script>
+    for (var i=0; i<360; i+= 0.5) {
+  			var pointer = document.createElement("span");
+  			pointer.setAttribute("id", "d" + i)
+  			pointer.style.backgroundColor = "hsl(" + i + ", 100%, 50%)"
+  			pointer.style.msTransform = "rotate(" + i + "deg)"
+  			pointer.style.webkitTransform = "rotate(" + i + "deg)"
+  			pointer.style.MozTransform = "rotate(" + i + "deg)"
+  			pointer.style.OTransform = "rotate(" + i + "deg)"
+  			pointer.style.transform = "rotate(" + i + "deg)"
+  			pointer.onclick = function(){
+  			  console.log(this.style.backgroundColor);
+  			}
+  			document.getElementById('colorwheel').appendChild(pointer);
+  	};
+		
+</script>
