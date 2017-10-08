@@ -29,9 +29,8 @@ var thecanvas;
 
 // Timer Settings
 
-var timer = 0;        // Current Time Keeper
-var duration = 2;     // The duration for which the ring stays on the screen.
-var timeup = false;
+var timer;            // Current Time Keeper
+var duration = 3;     // The duration for which the ring stays on the screen.
 
 // Color Wheel Settings
 var colorwheel;
@@ -222,28 +221,28 @@ function BettingGame(trials, num_blobs){
     this.ring.create();
   }
   
-  this.startTrial = function(){
-    
-    this.timer = int(millis()/1000);
+  this.startTrial = function(){    
     
     if (this.isStart){
+
+      timer = window.setTimeout(timeup, duration*1000);
       
-      if (this.timer == duration){
-        this.timeup = true;
-      }
-      
-      if (this.timeup){
-        
-        this.ring.hide();
-        colorwheel.style('display', 'inline-block');
-        showInstruction("Please place the first bet at the color you remember for this location.");
-        this.getRandomBlob();
-        
-      } else {
-        this.ring.show();
-      }
-    
+    if (this.timeup){
+
+      this.ring.hide();
+      colorwheel.style('display', 'inline-block');
+      showInstruction("Please place the first bet at the color you remember for this location.");
+      this.getRandomBlob();
+
+    } else {
+      this.ring.show();
     }
+
+    }
+  }
+
+  this.timeisup = function(){
+    this.timeup = true;
   }
   
   this.getRandomBlob = function(){
@@ -271,6 +270,11 @@ function Gaussian(){
   this.getGaussian = function(){
 
   }
+}
+
+function timeup(){
+  bettingGame.timeup = true;
+  window.clearTimeout(timer);
 }
 
 function calibrateColorWheel(){
