@@ -28,9 +28,10 @@ function processData(data) {
   		  placeBet(this.style.backgroundColor);
   		}
       pointer.onmouseover = function(){
-        getColor(this.style.backgroundColor);
+        getColor_Angel(this.style.backgroundColor, this.id);
       }
   		document.getElementById('colorwheel').appendChild(pointer);
     }
 }
+
 

@@ -53,18 +53,25 @@ function setup() {
   colorwheel = select("#colorwheel");
   calibrateColorWheel();
   instructions = select('#instructions');
+  colorwheel.show();
 
   bettingGame = new BettingGame(50, 5);
-  bettingGame.init();
+  // bettingGame.init();
   
+  
+
 
 }
 
 function draw() {
   
-  if (bettingGame.currentTrial < bettingGame.trials){
-    bettingGame.startTrial();
-  }
+  //refreshBackground();
+  
+
+  
+  // if (bettingGame.currentTrial < bettingGame.trials){
+  //   bettingGame.startTrial();
+  // }
 }
 
 /*
@@ -304,6 +311,30 @@ function getColor(acolor){
   this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
 }
 
+function getColor_Angel(acolor, angle){
+  var colors = acolor.replace("rgb(", "").replace(")","").split(',');
+  //this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
+  
+  angle = int(angle.replace("d",""));
+  console.log(angle);
+  
+    refreshBackground();
+
+  
+  stroke(127, 63, 120);
+  
+  translate(colorwheel.x, colorwheel.y);
+  rotate(270 - int(angle));
+  beginShape();
+  
+  for (var g = 0; g < 100; g++){
+      vertex(getGaussian(50,12,50,g) + mouseX, g + mouseY);
+  }
+
+  endShape(CLOSE);
+  
+}
+
 function refreshBackground(){
   background(81,174,213);
 }
@@ -315,6 +346,6 @@ function windowResized() {
   refreshBackground();
 }
 
-
-
-
+function getGaussian(mean, standardDeviation, maxHeight,x) {
+    return maxHeight * Math.pow(Math.E, -Math.pow(x - mean, 2) / (2 * (standardDeviation * standardDeviation)));
+}
