@@ -296,7 +296,7 @@ function keyPressed() {
 }
 
 function showInstruction(_text){
-  instructions.show();
+	instructions.show();
   instructions.html(_text, false);
 }
 
@@ -316,19 +316,19 @@ function getColor_Angel(acolor, angle){
   //this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
   
   angle = int(angle.replace("d",""));
-  console.log(angle);
   
-    refreshBackground();
-
+	angleMode(DEGREES);
+  var a = atan2(mouseY-height/2, mouseX-width/2);
+	console.log(a);
+  refreshBackground();
   
-  stroke(127, 63, 120);
-  
-  translate(colorwheel.x, colorwheel.y);
-  rotate(270 - int(angle));
+  stroke(127, 63, 120,0.7);
+  translate(width/2, (height+5)/2);
+  rotate(a + 5);
   beginShape();
   
-  for (var g = 0; g < 100; g++){
-      vertex(getGaussian(50,12,50,g) + mouseX, g + mouseY);
+  for (var g = 0; g < 200; g++){
+      vertex(getGaussian(100,20,50,g) + RING_RADIUS + 140, g - 110);
   }
 
   endShape(CLOSE);
