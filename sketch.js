@@ -34,6 +34,7 @@ var duration = 3;     // The duration for which the ring stays on the screen.
 
 // Color Wheel Settings
 var colorwheel;
+var COLORS = [];
 
 // Instruction Text
 var instructions;
@@ -42,7 +43,13 @@ var instructions;
 var RING_RADIUS = 180;
 
 // Betting Game Settings
-var bettingGame;
+var bettingGame = null;
+
+// Ofsets
+var offsetTop = 60;
+var textInCentreVal = "+";
+
+var GaussianValues = new Array(360);
 
 function setup() {
   
@@ -53,25 +60,25 @@ function setup() {
   colorwheel = select("#colorwheel");
   calibrateColorWheel();
   instructions = select('#instructions');
-  colorwheel.show();
-
-  bettingGame = new BettingGame(50, 5);
-  // bettingGame.init();
-  
-  
-
+  //colorwheel.show();
 
 }
 
 function draw() {
   
-  //refreshBackground();
+  textInCentre(textInCentreVal);
   
-
+  if (bettingGame && bettingGame.isStart){
+    
+    if (bettingGame.currentBets.length < bettingGame.trials){
+      bettingGame.startTrial();
+      bettingGame.showBets();
+    } else {
+      refreshBackground();
+      bettingGame.trialEnded();
+    }
+  }
   
-  // if (bettingGame.currentTrial < bettingGame.trials){
-  //   bettingGame.startTrial();
-  // }
 }
 
 /*
@@ -149,14 +156,23 @@ function Ring (x,y,n,r){
       
       var div = 360 / this.n_blobs;
       
+      var temp_colors = [];
+      temp_colors = COLORS.slice();
+      
       for (var b = 0; b < this.n_blobs; b++){
           var x = Math.cos((div * b) * (Math.PI / 180)) * this.radius;
           var y = Math.sin((div * b) * (Math.PI / 180)) * this.radius; 
           
           // Creating Blobs of random colors.
-          var rr = int(random(0,255));
-          var rg = int(random(0,255));
-          var rb = int(random(0,255));
+
+          var idx = int(random(0,temp_colors.length-1));
+          var random_color = temp_colors[idx].split(',')
+          
+          var rr = int(random_color[0]);
+          var rg = int(random_color[1]);
+          var rb = int(random_color[2]);
+          
+          temp_colors.splice(idx,1);
           
           var blob = new Blob(x + this.x, y + this.y, this.radius/2 ,{r:rr,g:rg,b:rb});
           this.blobs.push(blob);
@@ -188,63 +204,70 @@ function Ring (x,y,n,r){
   }
 
   this.calibrate = function(){
-      for (var b = 0; b < this.n_blobs; b++){
-        this.blobs[b]
-      }
+    
   }
-  
 }
 
 /*
   The Betting Game
   
   Attributes
-  
-  
-  
+
   Functions
   
 */
 
 function BettingGame(trials, num_blobs){
   
-  this.trials = trials;
-  this.num_blobs = num_blobs;
-  this.ring = null;
-  
-  // Settings
-  this.isStart = false;
-  this.timer = 0;
-  this.timeup = false;
-  
-  // Current Session
-  this.trialRunning = false;
-  this.currentTrial = 0;
-  this.currentBets = [];
-  this.currentBlob = null;
   
   this.init = function(){
-    this.ring = new Ring (screenW/2,screenH/2, this.num_blobs, RING_RADIUS);
+    
+      this.trials = trials;
+      this.num_blobs = num_blobs;
+      this.ring = null;
+      
+      // Settings
+      this.isStart = false;
+      this.timer = 0;
+      this.timeup = false;
+      this.timerActivated = false;
+      
+      // Current Session
+      this.trialRunning = false;
+      this.currentTrial = 0;
+      this.currentBets = [];
+      this.currentBlob = null;
+      
+      timer = 0;
+    
+    refreshBackground();
+    this.ring = new Ring (window.innerWidth/2,window.innerHeight/2 + offsetTop, this.num_blobs, RING_RADIUS);
     this.ring.create();
+    
   }
   
   this.startTrial = function(){    
     
     if (this.isStart){
-
-      timer = window.setTimeout(timeup, duration*1000);
       
-    if (this.timeup){
+      if (!this.timerActivated){
+        window.setTimeout(timeup, duration*1000);
+        this.timerActivated = true;
+        refreshBackground();
+        textInCentreVal = "+";
+      }
+      
 
-      this.ring.hide();
-      colorwheel.style('display', 'inline-block');
-      showInstruction("Please place the first bet at the color you remember for this location.");
-      this.getRandomBlob();
+      if (this.timeup){
+        this.ring.hide();
+        colorwheel.style('display', 'inline-block');
+        showInstruction("Please place the first bet at the color you remember for this location.");
+        this.getRandomBlob();
 
-    } else {
-      this.ring.show();
-    }
-
+      } else {
+        this.ring.show();
+        colorwheel.style('display', 'none');
+      }
     }
   }
 
@@ -253,6 +276,7 @@ function BettingGame(trials, num_blobs){
   }
   
   this.getRandomBlob = function(){
+
     if (this.currentBlob == null){
       this.currentBlob = this.ring.blobs[int(random(0, this.ring.blobs.length))];
       this.currentBlob.unhide();
@@ -260,92 +284,180 @@ function BettingGame(trials, num_blobs){
     }
     this.currentBlob.show();
   }
-  
-  this.getBets = function(){
-    
-    if (this.currentBets.length < 6){
-      
-    } else {
-      this.currentTrial += 1;
+
+  this.showBets = function(){
+    for (var b = 0; b < this.currentBets.length; b++){
+      showBet(this.currentBets[b].angle);
     }
+  }
+  
+  this.trialEnded = function(){
+    // GameOver
+    this.isStart = false;
+    
+    // Show correct answer
+    
+    // Save progress
+    
+    // Show a notice to start the next trial
+    showInstruction("You earned 0 points. The number of points you earn per trial is proportional to the height of the stacked bets at the location of the correct answer. The faster you earn points, the quicker the experiment will end as it will finish after a fixed number is earned. Once the answer display has disappeared, press [ENTER] to start main experiment.");
+    
   }
   
 }
 
-function Gaussian(){
+function Bet(angle){
+  
+  this.angle = angle;
 
-  this.getGaussian = function(){
+  this.addBets = function(){
 
   }
 }
 
 function timeup(){
+  console.log("timeup")
   bettingGame.timeup = true;
-  window.clearTimeout(timer);
-}
-
-function calibrateColorWheel(){
-  colorwheel.position(screenW/2 + 240,screenH/2 + 50);
 }
 
 function keyPressed() {
+  
   if (keyCode === ENTER) {
+    bettingGame = new BettingGame(6, 6);
+    bettingGame.init();
     bettingGame.isStart = true;
+    
     instructions.hide();
-  }
+    instructions.attribute("align", "center");
+  } 
+  
 }
 
 function showInstruction(_text){
 	instructions.show();
-  instructions.html(_text, false);
+	var pText = "<p>" + _text + "</p>"
+  instructions.html(pText, false);
 }
 
-function placeBet(acolor){
+function textInCentre(_text){
+  textSize(30)
+  textAlign(CENTER);
+  text(_text, width/2, height/2 + offsetTop);
+}
+
+function attachGaussian(acolor, angle){
+
   var colors = acolor.replace("rgb(", "").replace(")","").split(',');
   this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
+  this.bettingGame.currentBets.push(new Bet(int(angle.replace('d',''))));
+  showBet(angle, true)
+
 }
 
-function getColor(acolor){
-
+function displayGaussian(acolor, angle){
+  
   var colors = acolor.replace("rgb(", "").replace(")","").split(',');
   this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
-}
-
-function getColor_Angel(acolor, angle){
-  var colors = acolor.replace("rgb(", "").replace(")","").split(',');
-  //this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
-  
-  angle = int(angle.replace("d",""));
-  
-	angleMode(DEGREES);
-  var a = atan2(mouseY-height/2, mouseX-width/2);
-	console.log(a);
+  var angle = int(angle.replace('d',''))
   refreshBackground();
-  
-  stroke(127, 63, 120,0.7);
-  translate(width/2, (height+5)/2);
-  rotate(a + 5);
-  beginShape();
-  
-  for (var g = 0; g < 200; g++){
-      vertex(getGaussian(100,20,50,g) + RING_RADIUS + 140, g - 110);
-  }
+  showBet(angle, false)
 
-  endShape(CLOSE);
+}
+
+function getGaussian(mean, standardDeviation, maxHeight,x) {
+    return maxHeight * Math.pow(Math.E, -Math.pow(x - mean, 2) / (2 * (standardDeviation * standardDeviation)));
+}
+
+function showBet(angle, add){
   
+  angleMode(DEGREES);
+  
+  push();  
+    smooth();
+    stroke(127, 63, 120,0.7);
+    fill('white')
+    translate(width/2, height/2 + offsetTop);
+    rotate(angle);
+    beginShape();
+
+    for (var g = 40; g < 160; g++){
+      
+      var idx = 0;
+      if (g < 100){
+        
+        idx = (angle - g);
+        
+        if (angle - g < 0){
+          idx = 360 - (angle - g);
+        }
+        
+      } else {
+        
+        idx = (angle + g);
+        
+        if (angle + g > 360){
+          idx = (angle + g) - 360;
+        }
+      }
+      
+      if (add){
+        GaussianValues[idx] = getGaussian(100,20,50,g)
+        console.log(GaussianValues)
+      }
+    
+      var offset = 0;
+      
+      if (GaussianValues[idx]){
+        offset = GaussianValues[idx];
+      }
+
+      vertex(offset + getGaussian(100,20,50,g) + RING_RADIUS + 140, g - 100);
+    
+    }
+    endShape(CLOSE);
+  pop();
 }
 
 function refreshBackground(){
   background(81,174,213);
 }
 
+function calibrateColorWheel(){
+  colorwheel.position(width/2 + 240,height/2 - 14 + offsetTop);
+}
+
 function windowResized() {
   screenW = window.innerWidth;  
   screenH = window.innerHeight;  
   thecanvas.size(screenW, screenH);
+  calibrateColorWheel();
   refreshBackground();
 }
 
-function getGaussian(mean, standardDeviation, maxHeight,x) {
-    return maxHeight * Math.pow(Math.E, -Math.pow(x - mean, 2) / (2 * (standardDeviation * standardDeviation)));
+function initGame(data) {
+    var colorLines = data.split(/\r\n|\n/);
+
+    for (var c = 0; c < colorLines.length; c++){
+      var aColor = colorLines[c];
+      COLORS.push(aColor);
+      var pointer = document.createElement("span");
+  		pointer.setAttribute("id", "d" + c)
+  		pointer.style.backgroundColor = 'rgb(' + aColor + ')';
+  		pointer.style.msTransform = "rotate(" + c + "deg)"
+  		pointer.style.webkitTransform = "rotate(" + c + "deg)"
+  		pointer.style.MozTransform = "rotate(" + c + "deg)"
+  		pointer.style.OTransform = "rotate(" + c + "deg)"
+  		pointer.style.transform = "rotate(" + c + "deg)"
+  		pointer.onclick = function(){
+  		  attachGaussian(this.style.backgroundColor, this.id);
+  		}
+      pointer.onmouseover = function(){
+        displayGaussian(this.style.backgroundColor, this.id);
+      }
+  		document.getElementById('colorwheel').appendChild(pointer);
+    }
+    
+    bettingGame = new BettingGame(6, 6);
+    bettingGame.init();
 }
+
