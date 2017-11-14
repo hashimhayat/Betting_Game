@@ -350,7 +350,6 @@ function attachGaussian(acolor, angle){
   var colors = acolor.replace("rgb(", "").replace(")","").split(',');
   this.bettingGame.currentBlob.c = {r: colors[0], g: colors[1], b: colors[2]}
   this.bettingGame.currentBets.push(new Bet(int(angle.replace('d',''))));
-  showBet(angle, true)
 
 }
 
@@ -382,36 +381,36 @@ function showBet(angle, add){
 
     for (var g = 40; g < 160; g++){
       
-      var idx = 0;
-      if (g < 100){
+      // var idx = 0;
+      // if (g < 100){
         
-        idx = (angle - g);
+      //   idx = (angle - g);
         
-        if (angle - g < 0){
-          idx = 360 - (angle - g);
-        }
+      //   if (angle - g < 0){
+      //     idx = 360 - (angle - g);
+      //   }
         
-      } else {
+      // } else {
         
-        idx = (angle + g);
+      //   idx = (angle + g);
         
-        if (angle + g > 360){
-          idx = (angle + g) - 360;
-        }
-      }
+      //   if (angle + g > 360){
+      //     idx = (angle + g) - 360;
+      //   }
+      // }
       
-      if (add){
-        GaussianValues[idx] = getGaussian(100,20,50,g)
-        console.log(GaussianValues)
-      }
+      // if (add){
+      //   GaussianValues[idx] = getGaussian(100,20,50,g)
+      //   console.log(GaussianValues)
+      // }
     
-      var offset = 0;
+      // var offset = 0;
       
-      if (GaussianValues[idx]){
-        offset = GaussianValues[idx];
-      }
+      // if (GaussianValues[idx]){
+      //   offset = GaussianValues[idx];
+      // }
 
-      vertex(offset + getGaussian(100,20,50,g) + RING_RADIUS + 140, g - 100);
+      vertex(getGaussian(100,20,50,g) + RING_RADIUS + 140, g - 100);
     
     }
     endShape(CLOSE);
